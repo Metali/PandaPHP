@@ -3,11 +3,14 @@
 class PandaSQL
 {
     public $args;
-    private $pdo;
     public $table;
+    private $pdo;
+    private $timestart;
 
     public function __construct($conf = [])
     {
+        $this->timestart=microtime(true);
+
         $pdo = [
             'db' => (isset($conf['db']) && !empty($conf['db'])) ? $conf['db'] : '',
             'host' => (isset($conf['host']) && !empty($conf['host'])) ? $conf['host'] : '127.0.0.1',
@@ -26,35 +29,43 @@ class PandaSQL
         }
     }
 
-    public function insert($args)
+    public function create($args)
     {
         if (!is_array($args)) {
-            return "Array expected, " . gettype($args) . " given";
+            return new Exception("Array expected, " . gettype($args) . " given");
         }
 
-        $data = "";
+        $val = [];
+
+        $this->isTableDefined();
         $this->args = $args;
-        if($this->isAssociativeArray($this->args)) {
-            // TODO : assoc
+
+        if ($this->isAssociativeArray($this->args)) {
+            $col = [];
+            foreach ($this->args as $key => $value) {
+                $col[] = $key;
+                $val[] = '"' . $value . '"';
+            }
+
+            $val = implode($val, ",");
+            $col = implode($col, ",");
+
+            $row = "(". $col ." ) VALUES (" . $val . ")";
+
         } else {
-            $data = implode($this->args,",");
+            foreach ($this->args as $key => $value) {
+                $val[$key] = '"' . $value . '"';
+            }
+            $val = implode($val, ",");
+            $row = " VALUES (" . $val . ")";
         }
 
-        if(!$this->isTableDefined()) {
-            return "table doesn't exist";
-        }
-
-
-
+        $sql = $this->pdo->prepare("INSERT INTO " . $this->table . $row);
+        return $sql->execute();
     }
 
     public function findOneBy($args)
     {
-        $this->args = $args;
-        if (!$this->args) {
-            echo "args empty";
-            return false;
-        }
 
     }
 
@@ -78,10 +89,9 @@ class PandaSQL
 
     }
 
-    /**
-     * Test
-     */
-
+    /*
+    * Test
+    */
     private function isAssociativeArray($array)
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0 ? true : false;
@@ -89,12 +99,17 @@ class PandaSQL
 
     private function isTableDefined()
     {
-        if(!empty($this->table))
-        {
-            return false;
+        if (empty($this->table)) {
+            throw new Exception('No table defined');
         }
+    }
 
-        return true;
+    public function timeend()
+    {
+        $end = microtime(true);
+        $time = $end - $this->timestart;
+        $page_load_time = number_format($time, 10);
+        echo "<br>Executed " . $page_load_time . " sec";
     }
 
     // TODO :
