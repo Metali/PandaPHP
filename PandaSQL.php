@@ -5,12 +5,10 @@ class PandaSQL
     public $args;
     public $table;
     private $pdo;
-    private $timestart;
+    private $lastQuery;
 
     public function __construct($conf = [])
     {
-        $this->timestart=microtime(true);
-
         $pdo = [
             'db' => (isset($conf['db']) && !empty($conf['db'])) ? $conf['db'] : '',
             'host' => (isset($conf['host']) && !empty($conf['host'])) ? $conf['host'] : '127.0.0.1',
@@ -31,27 +29,13 @@ class PandaSQL
 
     public function create($args)
     {
-        if (!is_array($args)) {
-            return new Exception("Array expected, " . gettype($args) . " given");
-        }
-
+        $this->args = $args;
+        $this->isArgsArray();
         $val = [];
 
-        $this->isTableDefined();
-        $this->args = $args;
-
         if ($this->isAssociativeArray($this->args)) {
-            $col = [];
-            foreach ($this->args as $key => $value) {
-                $col[] = $key;
-                $val[] = '"' . $value . '"';
-            }
-
-            $val = implode($val, ",");
-            $col = implode($col, ",");
-
-            $row = "(". $col ." ) VALUES (" . $val . ")";
-
+            $formatedArgs = $this->formatAssociativeValues($this->args);
+            $row = " (" . $formatedArgs['col'] . " ) VALUES (" . $formatedArgs['val'] . ")";
         } else {
             foreach ($this->args as $key => $value) {
                 $val[$key] = '"' . $value . '"';
@@ -60,8 +44,8 @@ class PandaSQL
             $row = " VALUES (" . $val . ")";
         }
 
-        $sql = $this->pdo->prepare("INSERT INTO " . $this->table . $row);
-        return $sql->execute();
+        $this->lastQuery = $this->pdo->prepare("INSERT INTO " . $this->table . $row);
+        return $this->lastQuery;
     }
 
     public function findOneBy($args)
@@ -74,24 +58,61 @@ class PandaSQL
 
     }
 
-    public function where()
-    {
-
-    }
-
-    public function delete()
-    {
-
-    }
-
     public function update()
     {
 
     }
 
-    /*
-    * Test
-    */
+    public function delete($args)
+    {
+        $this->args = $args;
+
+        $this->isTableDefined();
+        $this->isArgsArray($args);
+
+
+        $row = "DELETE FROM " . $this->table. " WHERE ";
+        $i = 1;
+        foreach ($this->args as $key => $value) {
+            $row .= $key . ' = "' . $value . '"';
+            if($i < count($this->args)) {
+                $row .= ",";
+            }
+        }
+
+        $this->lastQuery = $this->pdo->prepare($row);
+        return $this->lastQuery;
+    }
+
+    /* test */
+
+    public function formatAssociativeValues($args)
+    {
+        $col = [];
+        $val = [];
+
+        foreach ($this->args as $key => $value) {
+            $col[] = $key;
+            $val[] = '"' . $value . '"';
+        }
+
+        $val = implode($val, ",");
+        $col = implode($col, ",");
+
+        return ['col' => $col, 'val' => $val];
+    }
+
+    public function execute()
+    {
+        $this->isTableDefined();
+        return $this->lastQuery->execute();
+    }
+
+    public function getLastQuery()
+    {
+        return $this->lastQuery;
+    }
+
     private function isAssociativeArray($array)
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0 ? true : false;
@@ -104,12 +125,11 @@ class PandaSQL
         }
     }
 
-    public function timeend()
+    private function isArgsArray()
     {
-        $end = microtime(true);
-        $time = $end - $this->timestart;
-        $page_load_time = number_format($time, 10);
-        echo "<br>Executed " . $page_load_time . " sec";
+        if (!is_array($this->args)) {
+            throw new Exception("Array expected, " . gettype($this->args) . " given");
+        }
     }
 
     // TODO :
