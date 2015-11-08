@@ -16,6 +16,16 @@ You will write :
 $Panda->setTable('user');
 $Panda->select()->where(['id' => 3])->limit(1)->execute();
 ```
+___
+
+The following examples are based on the **user** table :
+
+| id  |  name | last name | age 
+| ------------- | ------------- | ------------- | ------------- |
+| 1  | John | Doe | 50 |
+| 2 | Chuck | Norris | 999 |
+| 3 | Nina | Lopez | 32 |
+| 4 | Joseph | Smith | 23 |
 
 ### Initialization
 
