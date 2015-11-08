@@ -17,6 +17,21 @@ $Panda->setTable('user');
 $Panda->select()->execute();
 ```
 ___
+### Summary
+
+* [Initialization](#initialization)
+* [Execute SQL request](#executing-sql-request)
+* [Set the table](#set-the-current-table-targeted)
+* [Select *](#select-)
+* [Select column_1, column_2](#select-column_1-column_2)
+* [Insert into](#insert-into)
+* [Update](#update)
+* [Delete](#delete)
+* [Where](#where)
+* [Limit](#limit)
+* [TODO list](#todo)
+
+___
 
 The following examples are based on the **user** table :
 
