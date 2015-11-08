@@ -19,7 +19,7 @@ $Panda->select()->where(['id' => 3])->limit(1)->execute();
 
 ### Initialization
 
-To use the framework, you must init the **Panda** class and set the table used for SQL request. Parameters with default arguments can are optionnal if their values fit with your local configuration.
+To use the framework, you must init the **Panda** class and set the table used for SQL request. Parameters with default arguments are optionnal if their values fit with your local configuration.
 
 ```php
 $Panda = new \PandaPHP\Panda([
