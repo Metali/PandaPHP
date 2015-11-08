@@ -103,7 +103,7 @@ $Panda->insert([
     'last_name' => 'Vine'
 ]);
 ```
-You can use a numeric array to create a new entry (all column value must be setted!)
+You can use a numeric array to create a new entry (all column values must be setted!)
 ```php
 /**
 * @param array(value_1, value_2, value_3)
@@ -166,7 +166,7 @@ $Panda->select(['name','age'])->where(['id' => 3]);
 ```
 
 ### Limit
-The limit method  add a `LIMIT offset, max` in your request. This method must always be used right before the `execute()` method. 
+The limit method  add a `LIMIT` in your request. This method must always be used right before the `execute()` method. 
 
 ```php
 /**
@@ -179,7 +179,12 @@ $Panda->...->limit($max, $offset)->execute();
 Example :
 
 ```php
-$Panda->select()->limit(5, 3)->execute(); // will return 5 users from the 4th entry
+// will return 5 users with 3 for the offset
+// The offset default value is 0
+$Panda->select()->limit(5, 3)->execute();
+
+// will return 5 users without offset
+$Panda->select()->limit(2)
 ```
 ___
 
