@@ -56,7 +56,7 @@ class SqlConstructor {
             if(!is_array($this->query)) {
                 $this->query = $this->pdo->prepare($this->query);
             }
-            
+
             try {
                 return $this->query->execute();
             } catch (\PDOException $e) {

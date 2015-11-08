@@ -67,7 +67,7 @@ class Panda
         return $this->SqlConstructor;
     }
 
-    public function find($args = [])
+    public function select($args = [])
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
