@@ -47,6 +47,7 @@ class Panda
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
+        $this->SqlConstructor->setMethod('execute');
 
         $val = [];
 
@@ -70,6 +71,7 @@ class Panda
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
+        $this->SqlConstructor->setMethod('fetch');
 
         if($this->DataChecker->isAssociativeArray($args)) {
             throw new \Exception("Numeric array expected, associative array given");
@@ -89,6 +91,7 @@ class Panda
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
+        $this->SqlConstructor->setMethod('execute');
 
         $row = $this->DataFormater->formatKeyWithValue($args);
         $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row);
@@ -98,6 +101,7 @@ class Panda
     public function delete()
     {
         $this->DataChecker->isTableDefined($this->table);
+        $this->SqlConstructor->setMethod('execute');
 
         $this->SqlConstructor->setQuery("DELETE FROM " . $this->table);
         return $this->SqlConstructor;

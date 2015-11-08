@@ -6,6 +6,7 @@ namespace PandaPHP\Services;
 class SqlConstructor {
     private $query;
     private $pdo;
+    private $method;
     private $DataFormater;
     private $DataChecker;
     
@@ -39,28 +40,35 @@ class SqlConstructor {
 
     public function execute()
     {
-        if(!is_array($this->query)) {
-            $this->query = $this->pdo->prepare($this->query);
+
+
+        if($this->method == 'fetch') {
+            if(!is_array($this->query)) {
+                $this->query = $this->pdo->query($this->query);
+            }
+
+            try {
+                return $this->query->fetchAll();
+            } catch (\PDOException $e) {
+                return $e;
+            }
+        } else {
+            if(!is_array($this->query)) {
+                $this->query = $this->pdo->prepare($this->query);
+            }
+            
+            try {
+                return $this->query->execute();
+            } catch (\PDOException $e) {
+                return $e;
+            }
         }
 
-        try {
-            return $this->query->execute();
-        } catch (\PDOException $e) {
-            return $e;
-        }
     }
 
-    public function search()
+    public function setMethod($method)
     {
-        if(!is_array($this->query)) {
-            $this->query = $this->pdo->query($this->query);
-        }
-
-        try {
-            return $this->query->fetchAll();
-        } catch (\PDOException $e) {
-            return $e;
-        }
+        return $this->method = $method;
     }
 
     public function setQuery($query)
