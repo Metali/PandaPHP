@@ -64,7 +64,7 @@ _note : the execute() method will not be write again in the following examples a
 
 ### Set the current table targeted
 
-To set a `FROM table_name` in your request, you have to use the **setTable('table_name')** method. You can re-use the method as much as you want in your code, just before executing the sql request.
+To set a `FROM table_name` in your request, you have to use the *setTable('table_name')* method. You can re-use the method as much as you want in your code, just before executing the sql request.
 
 ```php
 $Panda->setTable('a_table'); // Select from a table?
@@ -140,7 +140,7 @@ $Panda->delete();
 
 ### Where 
 
-You can add a where clause to precise wich row must be returned
+You can add a where clause for your request
 ```php
 /**
 * @param array('column' => 'value')
