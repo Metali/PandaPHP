@@ -43,7 +43,7 @@ class Panda
         }
     }
 
-    public function create($args)
+    public function insert($args)
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
