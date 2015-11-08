@@ -15,9 +15,12 @@ class SqlConstructor {
         $this->DataChecker = new \PandaPHP\Services\DataChecker();
     }
 
-    public function limit()
+    public function limit($limit, $offset = 0)
     {
-
+        $this->DataChecker->isInt($limit);
+        $this->DataChecker->isInt($offset);
+        $this->query = $this->query . " LIMIT " . $offset . "," . $limit;
+        return $this;
     }
 
     public function where($args)
@@ -27,16 +30,6 @@ class SqlConstructor {
 
         $this->query = $this->query . " WHERE " . $row;
         return $this;
-    }
-    
-    public function setQuery($query)
-    {
-        $this->query = $query;
-    }
-
-    public function getQuery()
-    {
-        return $this->query;
     }
 
     public function execute()
@@ -50,5 +43,15 @@ class SqlConstructor {
         } catch (\PDOException $e) {
             return $e;
         }
+    }
+
+    public function setQuery($query)
+    {
+        $this->query = $query;
+    }
+
+    public function getQuery()
+    {
+        return $this->query;
     }
 }

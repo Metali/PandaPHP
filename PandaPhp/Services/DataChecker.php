@@ -17,6 +17,13 @@ class DataChecker {
         }
     }
 
+    public function isInt($args)
+    {
+        if(!is_int($args)) {
+            throw new \Exception('Integer expected'. gettype($args) . " given");
+        }
+    }
+
     public function isTableDefined($table)
     {
         if (empty($table)) {

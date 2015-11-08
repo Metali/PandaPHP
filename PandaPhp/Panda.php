@@ -71,9 +71,12 @@ class Panda
         return $this->SqlConstructor;
     }
 
-    public function findBy()
+    public function findBy($args)
     {
-        // TODO
+        $this->DataChecker->isArgsArray($args);
+        $this->DataChecker->isTableDefined($this->table);
+        
+        return $this->SqlConstructor;
     }
 
     public function update($args)
@@ -88,23 +91,11 @@ class Panda
         return $this->SqlConstructor;
     }
 
-    public function delete($args)
+    public function delete()
     {
-        $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
-        
-        $this->args = $args;
-        $row = "";
-        $i = 1;
 
-        foreach ($this->args as $key => $value) {
-            $row .= $key . ' = ' . $this->DataFormater->formatValue($value) . '';
-            if($i < count($this->args)) {
-                $row .= ",";
-            }
-        }
-
-        $this->SqlConstructor->setQuery("DELETE FROM " . $this->table. " WHERE ".$row);
+        $this->SqlConstructor->setQuery("DELETE FROM " . $this->table);
         return $this->SqlConstructor;
     }
 
@@ -113,7 +104,7 @@ class Panda
         $this->table = $table;
     }
 
-    public function getQuery()
+    public function getLastQuery()
     {
         return $this->SqlConstructor->getQuery();
     }
