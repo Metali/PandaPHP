@@ -6,7 +6,7 @@ $Panda->select(...)->where(...)->execute();
 ```
 For example, instead of :
 ```php
-$request = "SELECT * FROM user WHERE id = 3 LIMIT 0,1";
+$request = "SELECT * FROM user";
 $query = $pdo->query($request);
 $result = $query->fetchAll();
 ```
@@ -14,7 +14,7 @@ $result = $query->fetchAll();
 You will write :
 ```php
 $Panda->setTable('user');
-$Panda->select()->where(['id' => 3])->limit(1)->execute();
+$Panda->select()->execute();
 ```
 ___
 
