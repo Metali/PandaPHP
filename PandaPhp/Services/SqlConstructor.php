@@ -7,6 +7,7 @@ class SqlConstructor {
     private $query;
     private $pdo;
     private $DataFormater;
+    private $DataChecker;
     
     public function __construct($pdo)
     {
@@ -44,6 +45,19 @@ class SqlConstructor {
 
         try {
             return $this->query->execute();
+        } catch (\PDOException $e) {
+            return $e;
+        }
+    }
+
+    public function search()
+    {
+        if(!is_array($this->query)) {
+            $this->query = $this->pdo->query($this->query);
+        }
+
+        try {
+            return $this->query->fetchAll();
         } catch (\PDOException $e) {
             return $e;
         }

@@ -1,6 +1,9 @@
 <?php
-
 namespace PandaPHP;
+
+require("Services/DataFormater.php");
+require("Services/DataChecker.php");
+require("Services/SqlConstructor.php");
 
 use PandaPHP\Services;
 
@@ -63,14 +66,22 @@ class Panda
         return $this->SqlConstructor;
     }
 
-    public function findBy($args)
+    public function find($args = [])
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
-        
-        if(!$this->DataChecker->isAssociativeArray($args)) {
-            throw new \Exception("Associative Array expected, " . gettype($args) . " given");
+
+        if($this->DataChecker->isAssociativeArray($args)) {
+            throw new \Exception("Numeric array expected, associative array given");
         }
+
+        if(empty($args)) {
+           $row = "*";
+        } else {
+            $row = implode($args, ",");
+        }
+
+        $this->SqlConstructor->setQuery("SELECT " . $row . " FROM " . $this->table);
         return $this->SqlConstructor;
     }
 
@@ -104,7 +115,4 @@ class Panda
 
     // TODO
     // JOIN
-    // args
-
-
 }
