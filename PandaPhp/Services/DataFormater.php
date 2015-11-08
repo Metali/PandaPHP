@@ -6,7 +6,7 @@ class DataFormater {
 
     public function __construct() {}
 
-    public function formatAssociativeValues($args)
+    public function formatValueForInsert($args)
     {
         $col = [];
         $val = [];
@@ -22,10 +22,19 @@ class DataFormater {
         return ['col' => $col, 'val' => $val];
     }
 
+    public function formatKeyWithValue($args)
+    {
+        $row = "";
+        foreach ($args as $key => $value) {
+            $row .= $key .' = '. $this->formatValue($value);
+        }
+
+        return $row;
+    }
 
     public function formatValue($value)
     {
-        return '"' . $value . '"';
         // TODO : avoid sql injection and stuff
+        return '"' . $value . '"';
     }
 }

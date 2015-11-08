@@ -6,18 +6,13 @@ namespace PandaPHP\Services;
 class SqlConstructor {
     private $query;
     private $pdo;
-    private $table;
-
+    private $DataFormater;
+    
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
-    }
-
-    public function setTable($table)
-    {
-        if(!empty($table)) {
-            $this->table = $table;
-        }
+        $this->DataFormater = new \PandaPHP\Services\DataFormater();
+        $this->DataChecker = new \PandaPHP\Services\DataChecker();
     }
 
     public function limit()
@@ -25,6 +20,15 @@ class SqlConstructor {
 
     }
 
+    public function where($args)
+    {
+        $this->DataChecker->isArgsArray($args);
+        $row = $this->DataFormater->formatKeyWithValue($args);
+
+        $this->query = $this->query . " WHERE " . $row;
+        return $this;
+    }
+    
     public function setQuery($query)
     {
         $this->query = $query;
@@ -37,13 +41,10 @@ class SqlConstructor {
 
     public function execute()
     {
-
-        var_dump($this->table);
         if(!is_array($this->query)) {
             $this->query = $this->pdo->prepare($this->query);
         }
 
-        var_dump($this->query);
         try {
             return $this->query->execute();
         } catch (\PDOException $e) {

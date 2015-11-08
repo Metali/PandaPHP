@@ -12,6 +12,8 @@ class Panda
     private $args;
     /** @var Services\DataFormater */
     private $DataFormater;
+    /** @var Services\DataChecker  */
+    private $DataChecker;
     /** @var Services\SqlConstructor */
     private $SqlConstructor;
 
@@ -23,7 +25,7 @@ class Panda
     public function __construct($conf = [])
     {
         $this->DataFormater = new \PandaPHP\Services\DataFormater();
-
+        $this->DataChecker = new \PandaPHP\Services\DataChecker();
         $pdo = [
             'db' => (isset($conf['db']) && !empty($conf['db'])) ? $conf['db'] : '',
             'host' => (isset($conf['host']) && !empty($conf['host'])) ? $conf['host'] : '127.0.0.1',
@@ -47,12 +49,14 @@ class Panda
      */
     public function create($args)
     {
+        $this->DataChecker->isArgsArray($args);
+        $this->DataChecker->isTableDefined($this->table);
+        
         $this->args = $args;
-        $this->isArgsArray();
         $val = [];
 
-        if ($this->isAssociativeArray($this->args)) {
-            $formatedArgs = $this->DataFormater->formatAssociativeValues($this->args);
+        if ($this->DataChecker->isAssociativeArray($this->args)) {
+            $formatedArgs = $this->DataFormater->formatValueForInsert($this->args);
             $row = " (" . $formatedArgs['col'] . " ) VALUES (" . $formatedArgs['val'] . ")";
         } else {
             foreach ($this->args as $key => $value) {
@@ -72,22 +76,24 @@ class Panda
         // TODO
     }
 
-    public function update()
+    public function update($args)
     {
-        /*
-            TODO
+        $this->DataChecker->isArgsArray($args);
+        $this->DataChecker->isTableDefined($this->table);
+        
+        $this->args = $args;
 
-            UPDATE table
-            SET colonne_1 = 'valeur 1', colonne_2 = 'valeur 2', colonne_3 = 'valeur 3'
-            WHERE condition
-         */
+        $row = $this->DataFormater->formatKeyWithValue($this->args);
+        $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row);
+        return $this->SqlConstructor;
     }
 
     public function delete($args)
     {
+        $this->DataChecker->isArgsArray($args);
+        $this->DataChecker->isTableDefined($this->table);
+        
         $this->args = $args;
-        $this->isArgsArray();
-
         $row = "";
         $i = 1;
 
@@ -102,29 +108,14 @@ class Panda
         return $this->SqlConstructor;
     }
 
-
-    private function isAssociativeArray($array)
-    {
-        return count(array_filter(array_keys($array), 'is_string')) > 0 ? true : false;
-    }
-
-    private function isArgsArray()
-    {
-        if (!is_array($this->args)) {
-            throw new \Exception("Array expected, " . gettype($this->args) . " given");
-        }
-    }
-
     public function setTable($table)
     {
         $this->table = $table;
     }
 
-    public function isTableDefined()
+    public function getQuery()
     {
-        if (empty($this->table)) {
-            throw new \Exception('No table defined');
-        }
+        return $this->SqlConstructor->getQuery();
     }
 
     // TODO
