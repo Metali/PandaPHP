@@ -8,8 +8,6 @@ class Panda
 {
     /** @var (String) $table : current table used  */
     public $table;
-    /** @var (Array) $args : current args for SQL request*/
-    private $args;
     /** @var Services\DataFormater */
     private $DataFormater;
     /** @var Services\DataChecker  */
@@ -42,24 +40,18 @@ class Panda
         }
     }
 
-    /**
-     * @param (Array)$args
-     * @return PDOStatement
-     * @throws Exception
-     */
     public function create($args)
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
-        
-        $this->args = $args;
+
         $val = [];
 
-        if ($this->DataChecker->isAssociativeArray($this->args)) {
-            $formatedArgs = $this->DataFormater->formatValueForInsert($this->args);
+        if ($this->DataChecker->isAssociativeArray($args)) {
+            $formatedArgs = $this->DataFormater->formatValueForInsert($args);
             $row = " (" . $formatedArgs['col'] . " ) VALUES (" . $formatedArgs['val'] . ")";
         } else {
-            foreach ($this->args as $key => $value) {
+            foreach ($args as $key => $value) {
                 $val[$key] = $this->DataFormater->formatValue($value);
             }
 
@@ -76,6 +68,9 @@ class Panda
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
         
+        if(!$this->DataChecker->isAssociativeArray($args)) {
+            throw new \Exception("Associative Array expected, " . gettype($args) . " given");
+        }
         return $this->SqlConstructor;
     }
 
@@ -83,10 +78,8 @@ class Panda
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
-        
-        $this->args = $args;
 
-        $row = $this->DataFormater->formatKeyWithValue($this->args);
+        $row = $this->DataFormater->formatKeyWithValue($args);
         $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row);
         return $this->SqlConstructor;
     }

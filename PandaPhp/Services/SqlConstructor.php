@@ -28,6 +28,10 @@ class SqlConstructor {
         $this->DataChecker->isArgsArray($args);
         $row = $this->DataFormater->formatKeyWithValue($args);
 
+        if(!$this->DataChecker->isAssociativeArray($args)) {
+            throw new \Exception("Associative Array expected, " . gettype($args) . " given");
+        }
+
         $this->query = $this->query . " WHERE " . $row;
         return $this;
     }
