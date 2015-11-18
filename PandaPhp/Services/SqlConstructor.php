@@ -2,7 +2,6 @@
 
 namespace PandaPHP\Services;
 
-
 class SqlConstructor {
     private $query;
     private $pdo;
@@ -40,15 +39,13 @@ class SqlConstructor {
 
     public function execute()
     {
-
-
         if($this->method == 'fetch') {
             if(!is_array($this->query)) {
                 $this->query = $this->pdo->query($this->query);
             }
 
             try {
-                return $this->query->fetchAll();
+                return $this->query->fetchAll(\PDO::FETCH_ASSOC);
             } catch (\PDOException $e) {
                 return $e;
             }
