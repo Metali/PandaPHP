@@ -29,6 +29,7 @@ ___
 * [Delete](#delete)
 * [Where](#where)
 * [Limit](#limit)
+* [Custom sql request](#custom-sql-request)
 * [TODO list](#todo)
 
 ___
@@ -202,6 +203,14 @@ $Panda->select()->limit(5, 3)->execute();
 $Panda->select()->limit(2)
 ```
 ___
+
+### Custom sql request
+
+Example :
+
+```php
+$this->Panda->sql('SELECT * FROM users WHERE age > 50 ORDER BY RAND() LIMIT 1');
+```
 
 ### TODO
 
