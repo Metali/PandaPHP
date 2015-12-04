@@ -117,6 +117,13 @@ class Panda
         return $this->SqlConstructor->getQuery();
     }
 
+    public function sql($request)
+    {
+        $this->SqlConstructor->setMethod('fetch');
+        $this->SqlConstructor->setQuery($request);
+        return $this->SqlConstructor->execute();
+    }
+
     // TODO
     // JOIN
 }
