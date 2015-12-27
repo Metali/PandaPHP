@@ -43,6 +43,12 @@ class Panda
         }
     }
 
+    /**
+     * INSERT SQL REQUEST : build a sql insert request
+     * @param ARRAY $args :  column in the table = value inserted
+     * @return Services\SqlConstructor
+     * @throws \Exception
+     */
     public function insert($args)
     {
         $this->DataChecker->isArgsArray($args);
@@ -61,6 +67,12 @@ class Panda
         return $this->SqlConstructor;
     }
 
+    /**
+     * SELECT SQL REQUEST : build a sql select request
+     * @param ARRAY $args : columns selected
+     * @return Services\SqlConstructor
+     * @throws \Exception
+     */
     public function select($args = [])
     {
         $this->DataChecker->isArgsArray($args);
@@ -81,19 +93,29 @@ class Panda
         return $this->SqlConstructor;
     }
 
+    /**
+     * UPDATE SQL REQUEST : build an update sql request
+     * @param ARRAY $args : column to update => value inserted
+     * @return Services\SqlConstructor
+     * @throws \Exception
+     */
     public function update($args)
     {
         $this->DataChecker->isArgsArray($args);
         $this->DataChecker->isTableDefined($this->table);
         $this->SqlConstructor->setMethod('execute');
-
-        // todo : prepare
+        
         $row = $this->DataFormater->prepareWhereValues($args);
         $this->SqlConstructor->setPreparedArgs($row['values']);
         $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row['column']);
         return $this->SqlConstructor;
     }
 
+    /**
+     * DELETE SQL REQUEST : build an delete sql request
+     * @return Services\SqlConstructor
+     * @throws \Exception
+     */
     public function delete()
     {
         $this->DataChecker->isTableDefined($this->table);
@@ -103,21 +125,43 @@ class Panda
         return $this->SqlConstructor;
     }
 
+    /**
+     * Set the table used in the next sql instruction
+     * @param STRING $table
+     */
     public function setTable($table)
     {
         $this->table = $table;
     }
 
+    /**
+     * Return last query used
+     * @return mixed
+     */
     public function getLastQuery()
     {
         return $this->SqlConstructor->getQuery();
     }
 
+    /**
+     * SQL REQUEST : make the user able to request his own sql request
+     * @param STRING $request
+     * @return \Exception|\PDOException
+     */
     public function sql($request)
     {
         $this->SqlConstructor->setMethod('fetch');
         $this->SqlConstructor->setQuery($request);
         return $this->SqlConstructor->execute();
+    }
+
+    /**
+     * Return the DataFormater Class if user need to use its functions
+     * @return Services\DataFormater
+     */
+    public function DataFormater()
+    {
+        return $this->DataFormater;
     }
 
     // TODO

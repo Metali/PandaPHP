@@ -9,6 +9,7 @@ class SqlConstructor {
     private $DataFormater;
     private $DataChecker;
     private $preparedDatas;
+    public static $instance;
 
     public function __construct($pdo)
     {
@@ -16,6 +17,7 @@ class SqlConstructor {
         $this->DataFormater = new \PandaPHP\Services\DataFormater();
         $this->DataChecker = new \PandaPHP\Services\DataChecker();
         $this->preparedDatas = array();
+        self::$instance = $this;
     }
 
     public function limit($limit, $offset = 0)
@@ -91,5 +93,15 @@ class SqlConstructor {
     public function getQuery()
     {
         return $this->query;
+    }
+
+    public function getPdo()
+    {
+        return $this->pdo;
+    }
+
+    static public function getInstance()
+    {
+        return self::$instance;
     }
 }
