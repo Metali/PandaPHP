@@ -49,21 +49,15 @@ class Panda
         $this->DataChecker->isTableDefined($this->table);
         $this->SqlConstructor->setMethod('execute');
 
-        $val = [];
-
-        if ($this->DataChecker->isAssociativeArray($args)) {
-            $formatedArgs = $this->DataFormater->formatValueForInsert($args);
-            $row = " (" . $formatedArgs['col'] . " ) VALUES (" . $formatedArgs['val'] . ")";
-        } else {
-            foreach ($args as $key => $value) {
-                $val[$key] = $this->DataFormater->formatValue($value);
-            }
-
-            $val = implode($val, ",");
-            $row = " VALUES (" . $val . ")";
+        if(!$this->DataChecker->isAssociativeArray($args)) {
+            throw new \Exception("Associativ array expected, numeric array given");
         }
 
+        $preparedValues = $this->DataFormater->prepareInsertValues($args);
+        $row = " (" . $preparedValues['key'] . " ) VALUES (" . $preparedValues['temporary_values'] . ")";
+        $this->SqlConstructor->setPreparedArgs($preparedValues['prepared_values']);
         $this->SqlConstructor->setQuery("INSERT INTO " . $this->table . $row);
+
         return $this->SqlConstructor;
     }
 
@@ -93,8 +87,10 @@ class Panda
         $this->DataChecker->isTableDefined($this->table);
         $this->SqlConstructor->setMethod('execute');
 
-        $row = $this->DataFormater->formatKeyWithValue($args);
-        $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row);
+        // todo : prepare
+        $row = $this->DataFormater->prepareWhereValues($args);
+        $this->SqlConstructor->setPreparedArgs($row['values']);
+        $this->SqlConstructor->setQuery("UPDATE " . $this->table . " SET " . $row['column']);
         return $this->SqlConstructor;
     }
 

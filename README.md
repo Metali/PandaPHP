@@ -119,19 +119,6 @@ $Panda->insert([
     'last_name' => 'Vine'
 ]);
 ```
-You can use a numeric array to create a new entry (all column values must be setted!)
-```php
-/**
-* @param array(value_1, value_2, value_3)
-* @return true|false 
-*/
-$Panda->insert([
-    null,      // id
-    'Austin',  // name
-    'Power',   // last_name
-    '29'       // age
-]);
-```
 
 ### Update
 
