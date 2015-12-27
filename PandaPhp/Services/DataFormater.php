@@ -35,6 +35,6 @@ class DataFormater {
     public function formatValue($value)
     {
         // TODO : avoid sql injection and stuff
-        return '"' . mysql_real_escape_string(addslashes($value)) . '"';
+        return '"' . addslashes($value) . '"';
     }
 }
