@@ -28,6 +28,7 @@ ___
 * [Update](#update)
 * [Delete](#delete)
 * [Where](#where)
+* [Order by](#order-by)
 * [Limit](#limit)
 * [Custom sql request](#custom-sql-request)
 * [TODO list](#todo)
@@ -166,6 +167,14 @@ $Panda->update(['name'=>'new_name'])->where(['id' => 3]);
 
 // SELECT name, age FROM user WHERE id = 3
 $Panda->select(['name','age'])->where(['id' => 3]);
+```
+
+### Order by
+```
+Examples :
+```php
+$Panda->setTable('user');
+$Panda->select(...)->orderBy('id ASC')
 ```
 
 ### Limit
