@@ -8,12 +8,16 @@ class SqlConstructor {
     private $method;
     private $DataFormater;
     private $DataChecker;
-    
+    private $preparedDatas;
+    public static $instance;
+
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
         $this->DataFormater = new \PandaPHP\Services\DataFormater();
         $this->DataChecker = new \PandaPHP\Services\DataChecker();
+        $this->preparedDatas = array();
+        self::$instance = $this;
     }
 
     public function limit($limit, $offset = 0)
@@ -27,38 +31,37 @@ class SqlConstructor {
     public function where($args)
     {
         $this->DataChecker->isArgsArray($args);
-        $row = $this->DataFormater->formatKeyWithValue($args);
+        $data = $this->DataFormater->prepareWhereValues($args);
 
         if(!$this->DataChecker->isAssociativeArray($args)) {
             throw new \Exception("Associative Array expected, " . gettype($args) . " given");
         }
-
-        $this->query = $this->query . " WHERE " . $row;
+        $this->setPreparedArgs($data['values']);
+        $this->query = $this->query . " WHERE " . $data['column'];
         return $this;
     }
 
     public function execute()
     {
-        if($this->method == 'fetch') {
-            if(!is_array($this->query)) {
-                $this->query = $this->pdo->query($this->query);
-            }
+        $query = $this->pdo->prepare($this->query,array(\PDO::ATTR_CURSOR => \PDO::CURSOR_FWDONLY));
 
-            try {
-                return $this->query->fetchAll(\PDO::FETCH_ASSOC);
-            } catch (\PDOException $e) {
-                return $e;
+        try {
+            if($this->method == 'fetch') {
+                if(!empty($this->preparedDatas)) {
+                    $query->execute($this->preparedDatas);
+                } else {
+                    $query->execute();
+                }
+                return $query->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                if(!empty($this->preparedDatas)) {
+                    return $query->execute($this->preparedDatas);
+                } else {
+                    return $query->execute();
+                }
             }
-        } else {
-            if(!is_array($this->query)) {
-                $this->query = $this->pdo->prepare($this->query);
-            }
-
-            try {
-                return $this->query->execute();
-            } catch (\PDOException $e) {
-                return $e;
-            }
+        } catch (\PDOException $e) {
+            return $e;
         }
 
     }
@@ -66,6 +69,20 @@ class SqlConstructor {
     public function setMethod($method)
     {
         return $this->method = $method;
+    }
+
+    public function setPreparedArgs($args)
+    {
+        if(!empty($this->preparedDatas)) {
+            $args = array_merge($this->preparedDatas,$args);
+        }
+        $this->preparedDatas = $args;
+    }
+
+
+    public function getPreparedArgs()
+    {
+        return $this->preparedDatas;
     }
 
     public function setQuery($query)
@@ -76,5 +93,15 @@ class SqlConstructor {
     public function getQuery()
     {
         return $this->query;
+    }
+
+    public function getPdo()
+    {
+        return $this->pdo;
+    }
+
+    static public function getInstance()
+    {
+        return self::$instance;
     }
 }
