@@ -28,6 +28,12 @@ class SqlConstructor {
         return $this;
     }
 
+    public function orderBy($string)
+    {
+        $this->query = $this->query . " ORDER BY " . $string;
+        return $this;
+    }
+
     public function where($args)
     {
         $this->DataChecker->isArgsArray($args);
