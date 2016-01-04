@@ -170,7 +170,7 @@ $Panda->select(['name','age'])->where(['id' => 3]);
 ```
 
 ### Order by
-```
+
 Examples :
 ```php
 $Panda->setTable('user');
