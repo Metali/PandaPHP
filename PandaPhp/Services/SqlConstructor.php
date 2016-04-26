@@ -58,14 +58,17 @@ class SqlConstructor {
                 } else {
                     $query->execute();
                 }
-                return $query->fetchAll(\PDO::FETCH_ASSOC);
+                $result = $query->fetchAll(\PDO::FETCH_ASSOC);
             } else {
                 if(!empty($this->preparedDatas)) {
-                    return $query->execute($this->preparedDatas);
+                    $result = $query->execute($this->preparedDatas);
                 } else {
-                    return $query->execute();
+                    $result = $query->execute();
                 }
             }
+
+            $this->preparedDatas = array();
+            return $result;
         } catch (\PDOException $e) {
             return $e;
         }
