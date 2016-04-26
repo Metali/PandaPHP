@@ -170,7 +170,7 @@ $Panda->select(['name','age'])->where(['id' => 3]);
 ```
 
 ### Order by
-```
+
 Examples :
 ```php
 $Panda->setTable('user');
@@ -205,7 +205,7 @@ ___
 Example :
 
 ```php
-$this->Panda->sql('SELECT * FROM users WHERE age > 50 ORDER BY RAND() LIMIT 1');
+$Panda->sql('SELECT * FROM users WHERE age > 50 ORDER BY RAND() LIMIT 1');
 ```
 
 ### TODO
