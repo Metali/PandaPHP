@@ -1,5 +1,5 @@
 # PandaPHP
-Tired and lazy as a panda to write all your SQL request? PandaPHP is a php database framework to simplify your sql request, by allow you to build them step by step:
+Tired and lazy as a panda to write all your SQL request? PandaPHP is a php database framework to simplify your SQL requests, allowing you to build them step by step. :
 
 ```php
 $Panda->select(...)->where(...)->execute();
